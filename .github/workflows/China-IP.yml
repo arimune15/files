@@ -1,0 +1,41 @@
+name: China IP
+on:
+  schedule:
+    - cron: 30 11 * * *
+  watch:
+    types: [started]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download China IP
+      run: |
+        wget https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/ipip_country/ipip_country_cn.netset
+    - name: Create files
+      run: |
+        sed -i "/#/d" ipip_country_cn.netset
+        cp ipip_country_cn.netset ipip_country_cn.netset.2
+        sed -i "/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$/d" ipip_country_cn.netset
+        sed -i "/\//d" ipip_country_cn.netset.2
+        sed -i "s/$/\/32/" ipip_country_cn.netset.2
+        cat ipip_country_cn.netset.2 ipip_country_cn.netset > ChinaIP.list
+        sed -i "s/^/IP-CIDR,/" ChinaIP.list
+        cp ChinaIP.list ChinaIP.yaml
+        sed -i "s/^/  - /" ChinaIP.yaml
+        sed -i 1i\payload: ChinaIP.yaml
+    - name: Set variables
+      run: |
+        echo "TIME=Released on $(date +%Y).$(date +%m).$(date +%d)" >> $GITHUB_ENV
+      shell: bash
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./ChinaIP.list
+          ./ChinaIP.yaml
+        draft: false
+        prerelease: false
+        tag_name: China-IP
+        name: China IP
+        body:  ${{ env.TIME }}
