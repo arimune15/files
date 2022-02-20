@@ -1,0 +1,41 @@
+name: GeoIP CN
+on:
+  schedule:
+    - cron: 35 11 * * *
+  watch:
+    types: [started]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.17
+      - name: Download config
+        run: |
+          rm -rf *
+          git clone https://github.com/v2fly/geoip.git
+          mv ./geoip/* ./
+          rm config.json
+          wget -O config.json https://raw.githubusercontent.com/arimune15/files/main/config/geoip.json
+      - name: Build geoip.dat file
+        run: |
+          go run ./
+      - name: Set variables
+        run: |
+          echo "TIME=Released on $(date +%Y).$(date +%m).$(date +%d)" >> $GITHUB_ENV
+        shell: bash
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          files: |
+            ./output/dat/*.dat
+          draft: false
+          prerelease: false
+          tag_name: GeoIP-CN
+          name: GeoIP CN
+          body:  ${{ env.TIME }}
