@@ -11,16 +11,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Download China IP
       run: |
-        wget https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/ipip_country/ipip_country_cn.netset
+        wget https://raw.githubusercontent.com/misakaio/chnroutes2/master/chnroutes.txt
     - name: Create files
       run: |
-        sed -i "/#/d" ipip_country_cn.netset
-        cp ipip_country_cn.netset ipip_country_cn.netset.2
-        sed -i "/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$/d" ipip_country_cn.netset
-        sed -i "/\//d" ipip_country_cn.netset.2
-        sed -i "s/$/\/32/" ipip_country_cn.netset.2
-        cat ipip_country_cn.netset.2 ipip_country_cn.netset > ChinaIP.list
-        sed -i "s/^/IP-CIDR,/" ChinaIP.list
+        sed -i "/#/d" chnroutes.txt
+        sed -i "s/^/IP-CIDR,/" chnroutes.txt
+        mv chnroutes.txt ChinaIP.list
         cp ChinaIP.list ChinaIP.yaml
         sed -i "s/^/  - /" ChinaIP.yaml
         sed -i 1i\payload: ChinaIP.yaml
