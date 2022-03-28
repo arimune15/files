@@ -5,7 +5,7 @@
       "action": "add",
       "args": {
         "name": "cn",
-        "uri": "https://download-1302801676.cos.ap-shanghai.myqcloud.com/Geo_AS_IP/Geo_AS_IP_CN_All.txt"
+        "uri": "https://raw.githubusercontent.com/Hackl0us/GeoIP2-CN/release/CN-ip-cidr.txt"
       }
     },
     {
