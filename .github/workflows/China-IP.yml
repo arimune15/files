@@ -1,7 +1,7 @@
 name: China IP
 on:
   schedule:
-    - cron: 20 2 */3 * *
+    - cron: 30 11 * * *
   watch:
     types: [started]
 jobs:
@@ -11,12 +11,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Download China IP
       run: |
-        wget https://raw.githubusercontent.com/Hackl0us/GeoIP2-CN/release/CN-ip-cidr.txt
+        wget https://raw.githubusercontent.com/misakaio/chnroutes2/master/chnroutes.txt
     - name: Create files
       run: |
-        sed -i "/^[  ]*$/d" CN-ip-cidr.txt
-        sed -i "s/^/IP-CIDR,/" CN-ip-cidr.txt
-        mv CN-ip-cidr.txt ChinaIP.list
+        sed -i "/#/d" chnroutes.txt
+        sed -i "s/^/IP-CIDR,/" chnroutes.txt
+        mv chnroutes.txt ChinaIP.list
         cp ChinaIP.list ChinaIP.yaml
         sed -i "s/^/  - /" ChinaIP.yaml
         sed -i 1i\payload: ChinaIP.yaml
